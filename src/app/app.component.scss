@@ -1,0 +1,94 @@
+:host {
+    display: block;
+    --padding-container: 1rem;
+    --border-radius: 0.5rem;
+  }
+  
+  .app-container {
+    position: relative;
+    padding: var(--padding-container);
+    min-height: 90vh;
+  }
+  
+  /* Стили для времени на мобильных устройствах */
+  .mobile-time {
+    display: none;
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+    z-index: 10;
+  }
+  
+  /* Стили для тулбара */
+  :host ::ng-deep .app-toolbar {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  /* Стили для спиннера загрузки */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+  
+  /* Адаптивные стили */
+  @media (max-width: 768px) {
+    .app-container {
+      padding: 0.5rem;
+    }
+    
+    .mobile-time {
+      display: block;
+      margin-bottom: 1rem;
+    }
+    
+    .desktop-only {
+      display: none !important;
+    }
+    
+    :host ::ng-deep .app-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0.5rem;
+    }
+    
+    :host ::ng-deep .app-toolbar .p-toolbar-group-start,
+    :host ::ng-deep .app-toolbar .p-toolbar-group-end {
+      justify-content: center;
+    }
+    
+    :host ::ng-deep .p-dropdown,
+    :host ::ng-deep .p-inputgroup {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .app-container {
+      padding: 0.25rem;
+    }
+    
+    .mobile-time {
+      font-size: 0.75rem;
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+    
+    :host ::ng-deep .app-toolbar {
+      padding: 0.25rem;
+    }
+  }

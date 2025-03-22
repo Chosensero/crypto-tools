@@ -1,0 +1,17 @@
+<div class="filter-sort-container desktop-only">
+    <input
+      type="text"
+      pInputText
+      placeholder="Поиск по символу"
+      [(ngModel)]="filterText"
+      (input)="filterChanged.emit(filterText)"
+    />
+    <button
+      pButton
+      type="button"
+      [icon]="sortDirection === 'asc' ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
+      (click)="toggleSort()"
+      title="Сортировать по цене {{sortDirection === 'asc' ? 'по возрастанию' : 'по убыванию'}}"
+    ></button>
+  </div>
+  

@@ -1,0 +1,138 @@
+.error-message {
+    text-align: center;
+    padding: 20px;
+    color: #ff4444;
+  }
+
+  .table-container {
+    margin-top: 20px;
+  }
+
+  :host ::ng-deep .p-datatable.p-datatable-scrollable .p-datatable-wrapper {
+    overflow-y: auto;
+  }
+
+  :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    height: 40px; 
+  }
+
+  :host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+    height: 36px; 
+  }
+
+  .text-success {
+    color: #28a745;
+  }
+
+  .text-danger {
+    color: #dc3545;
+  }
+
+  .tooltip-circle {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #888;
+    color: white;
+    font-size: 12px;
+    cursor: help;
+    margin-left: 4px;
+  }
+
+  .tooltip-circle:hover {
+    background-color: #555;
+  }
+
+
+  .desktop-view {
+    display: block;
+  }
+
+  .mobile-view {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .desktop-view {
+      display: none; 
+    }
+
+    .mobile-view {
+      display: block; 
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .instrument-card {
+      background-color: #1a1a1a; 
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .instrument-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .symbol {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .price {
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .instrument-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .label {
+      color: #888;
+    }
+
+    .value {
+      color: #ffffff;
+    }
+
+    .hide-on-mobile {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .mobile-view {
+      max-height: 300px; 
+    }
+
+    .instrument-card {
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .symbol, .price {
+      font-size: 14px;
+    }
+
+    .detail-item {
+      font-size: 12px;
+    }
+  }

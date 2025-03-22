@@ -1,0 +1,10 @@
+<div class="flex align-items-center">
+    <p-dropdown
+      [options]="exchanges"
+      [(ngModel)]="selectedExchange"
+      (onChange)="onExchangeChange($event)"
+      placeholder="Выберите биржу"
+      styleClass="p-inputtext-sm"
+      [showClear]="false"
+    ></p-dropdown>
+  </div>

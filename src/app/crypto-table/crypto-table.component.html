@@ -1,0 +1,81 @@
+
+    <!-- Сообщение об ошибке -->
+    <div *ngIf="error && !instruments.length" class="error-message">
+        {{ error }}
+      </div>
+  
+      <!-- Таблица с данными для ПК -->
+      <div *ngIf="instruments.length" class="table-container desktop-view">
+        <p-table
+          #dt
+          [value]="instruments"
+          [scrollable]="true"
+          scrollHeight="480px"
+          [rows]="10"
+          [responsiveLayout]="'scroll'"
+          styleClass="p-datatable-sm"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="symbol">
+                Название <p-sortIcon field="symbol"></p-sortIcon>
+                <span pTooltip="Торговая пара (например, BTCUSDT) — идентификатор инструмента на бирже" tooltipPosition="top" class="tooltip-circle">?</span>
+              </th>
+              <th pSortableColumn="lastPrice">
+                Цена <p-sortIcon field="lastPrice"></p-sortIcon>
+                <span pTooltip="Последняя цена инструмента в базовой валюте (округлено до 4 знаков)" tooltipPosition="top" class="tooltip-circle">?</span>
+              </th>
+              <th pSortableColumn="volume" class="hide-on-mobile">
+                Объем <p-sortIcon field="volume"></p-sortIcon>
+                <span pTooltip="Объем торгов за последние 24 часа (K для тысяч, M для миллионов)" tooltipPosition="top" class="tooltip-circle">?</span>
+              </th>
+              <th pSortableColumn="priceChangePercent">
+                Изменения за 24ч <p-sortIcon field="priceChangePercent"></p-sortIcon>
+                <span pTooltip="Процентное изменение цены за 24 часа" tooltipPosition="top" class="tooltip-circle">?</span>
+              </th>
+              <th pSortableColumn="highPrice" class="hide-on-mobile">
+                Высшая цена 24ч <p-sortIcon field="highPrice"></p-sortIcon>
+                <span pTooltip="Максимальная цена за последние 24 часа" tooltipPosition="top" class="tooltip-circle">?</span>
+              </th>
+              <th pSortableColumn="lowPrice" class="hide-on-mobile">
+                Низшая цена 24ч <p-sortIcon field="lowPrice"></p-sortIcon>
+                <span pTooltip="Минимальная цена за последние 24 часа" tooltipPosition="top" class="tooltip-circle">?</span>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-instrument>
+            <tr>
+              <td>{{ instrument.symbol }}</td>
+              <td>{{ instrument.lastPrice | number:'1.4-4' }}</td>
+              <td class="hide-on-mobile">{{ formatVolume(instrument.volume) }}</td>
+              <td [ngClass]="{'text-success': instrument.priceChangePercent > 0, 'text-danger': instrument.priceChangePercent < 0}">
+                {{ instrument.priceChangePercent | number:'1.2-2' }}%
+              </td>
+              <td class="hide-on-mobile">{{ instrument.highPrice | number:'1.4-4' }}</td>
+              <td class="hide-on-mobile">{{ instrument.lowPrice | number:'1.4-4' }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+  
+      <!-- Мобильная оптимизация: список вместо таблицы -->
+      <div *ngIf="instruments.length" class="mobile-view">
+        <div *ngFor="let instrument of instruments" class="instrument-card">
+          <div class="instrument-header">
+            <span class="symbol">{{ instrument.symbol }}</span>
+            <span class="price">{{ instrument.lastPrice | number:'1.4-4' }}</span>
+          </div>
+          <div class="instrument-details">
+            <div class="detail-item">
+              <span class="label">Volume:</span>
+              <span class="value">{{ formatVolume(instrument.volume) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">24h Change:</span>
+              <span class="value" [ngClass]="{'text-success': instrument.priceChangePercent > 0, 'text-danger': instrument.priceChangePercent < 0}">
+                {{ instrument.priceChangePercent | number:'1.2-2' }}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
