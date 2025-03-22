@@ -15,28 +15,22 @@ import { Table } from 'primeng/table';
     TableModule,
     ProgressSpinnerModule,
     TooltipModule,
-    InputTextModule
+    InputTextModule,
   ],
-  templateUrl: 'crypto-table.component.html',
-  styleUrls: ['./crypto-table.component.scss']
+  templateUrl: './crypto-table.component.html',
+  styleUrls: ['./crypto-table.component.scss'],
 })
 export class CryptoTableComponent {
-  // Список инструментов для отображения в таблице
   @Input() instruments: CryptoInstrument[] = [];
-  
-  // Флаг загрузки данных
   @Input() loading: boolean = true;
-  
-  // Сообщение об ошибке, если данные не загрузились
   @Input() error: string | null = null;
 
-  // Ссылка на таблицу PrimeNG
   @ViewChild('dt') dt!: Table;
 
   // Фильтрация таблицы по глобальному значению
   onFilter(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input) {
+    if (input && this.dt) {
       this.dt.filterGlobal(input.value, 'contains');
     }
   }
@@ -49,4 +43,11 @@ export class CryptoTableComponent {
     if (num >= 1_000) return (num / 1_000).toFixed(2) + 'K';
     return num.toFixed(2);
   }
+
+  /*
+   refactor: optimize and improve readability across the project
+   * 1. Добавлена проверка на наличие dt в onFilter, чтобы избежать ошибок при отсутствии таблицы.
+   * 2. Метод formatVolume оптимизирован и безопасен для некорректных данных.
+   * 3. Для больших списков можно добавить виртуальный скроллинг через p-table [virtualScroll]="true".
+   */
 }

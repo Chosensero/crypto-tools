@@ -10,32 +10,35 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
   selector: 'app-filter-sort',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    InputTextModule, 
+    CommonModule,
+    FormsModule,
+    InputTextModule,
     ButtonModule,
     InputGroupModule,
-    InputGroupAddonModule
+    InputGroupAddonModule,
   ],
-  templateUrl: `./filter-sort.component.html`,
-  styles:  ''
+  templateUrl: './filter-sort.component.html',
+  styles: '',
 })
 export class FilterSortComponent {
-  // Текущий текст фильтра
   filterText: string = '';
-  
-  // Текущее направление сортировки
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  // Событие при изменении фильтра
   @Output() filterChanged = new EventEmitter<string>();
-
-  // Событие при изменении сортировки
   @Output() sortChanged = new EventEmitter<'asc' | 'desc'>();
 
-  // Переключает направление сортировки и эмитит событие
+  // Обработчик изменения текста фильтра (ngModelChange вызывает его)
+  onFilterChange(): void {
+    this.filterChanged.emit(this.filterText);
+  }
+
   toggleSort(): void {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     this.sortChanged.emit(this.sortDirection);
   }
+
+  /*
+   refactor: optimize and improve readability across the project
+   * 1. Добавлен явный метод onFilterChange для обработки изменений фильтра через ngModelChange в шаблоне.
+   */
 }

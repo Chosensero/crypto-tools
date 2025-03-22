@@ -9,7 +9,7 @@ import { ExchangeOption } from '../types/exchange-option';
   standalone: true,
   imports: [CommonModule, DropdownModule, FormsModule],
   templateUrl: './exchange-selector.component.html',
-  styles: []
+  styles: [],
 })
 export class ExchangeSelectorComponent {
   @Output() exchangeSelected = new EventEmitter<string>();
@@ -18,15 +18,15 @@ export class ExchangeSelectorComponent {
   exchanges: ExchangeOption[] = [
     { label: 'Binance', value: 'binance' },
     { label: 'Bybit', value: 'bybit' },
-    { label: 'OKX', value: 'okx' }
+    { label: 'OKX', value: 'okx' },
   ];
 
-  // Выбранная по умолчанию биржа
   selectedExchange: string = 'binance';
 
   // Обработчик смены биржи
   onExchangeChange(event: any): void {
-    const exchange = event.value;
-    this.exchangeSelected.emit(exchange);
+    this.exchangeSelected.emit(event.value);
   }
+
+
 }

@@ -3,53 +3,76 @@ import { WebSocketConfig } from './exchange-config';
 
 export class WebSocketHandler {
   private ws: WebSocket | null = null;
-  private exchange: string;
+  private reconnectTimeout: number | null = null;
+  private readonly reconnectDelay = 2000; // Задержка перед повторным подключением в мс
 
-  constructor(exchange: string, private onData: (instruments: CryptoInstrument[], serverTime: Date | null, error?: string) => void) {
-    this.exchange = exchange;
-  }
+  constructor(
+    private exchange: string,
+    private onData: (instruments: CryptoInstrument[], serverTime: Date | null, error?: string) => void
+  ) {}
 
   // Устанавливает WebSocket-соединение с биржей
-  connect(config: WebSocketConfig) {
+  connect(config: WebSocketConfig): void {
     this.ws = new WebSocket(config.wsUrl);
 
     this.ws.onopen = () => {
-      console.log('WebSocket открыт для', this.exchange);
+      console.log(`WebSocket открыт для ${this.exchange}`);
       this.ws?.send(JSON.stringify(config.subscriptionMessage));
+      if (this.reconnectTimeout) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
+      }
     };
 
     this.ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Данные от', this.exchange, data);
+        console.log(`Данные от ${this.exchange}:`, data);
 
-        // Обрабатываем ошибочные события
         if (data.event || data.code) {
           this.onData([], null, `Ошибка от ${this.exchange}: ${data.event || data.code}`);
           return;
         }
 
-        // Парсим и передаем данные
         const { instruments, serverTime } = this.parseData(data);
-        console.log('Спарсенные инструменты:', instruments, 'Серверное время:', serverTime);
         this.onData(instruments, serverTime);
       } catch (err) {
-        console.error('Ошибка парсинга данных WebSocket:', err);
+        console.error(`Ошибка парсинга данных WebSocket для ${this.exchange}:`, err);
         this.onData([], null, 'Ошибка парсинга данных');
       }
     };
 
-    this.ws.onerror = (error) => {
-      console.error('Ошибка WebSocket для', this.exchange, error);
+    this.ws.onerror = () => {
+      console.error(`Ошибка WebSocket для ${this.exchange}`);
       this.onData([], null, 'Ошибка соединения с WebSocket');
+      this.scheduleReconnect(config);
+    };
+
+    this.ws.onclose = () => {
+      console.log(`WebSocket закрыт для ${this.exchange}`);
+      this.scheduleReconnect(config);
     };
   }
 
   // Закрывает WebSocket-соединение
-  disconnect() {
+  disconnect(): void {
     if (this.ws) {
       this.ws.close();
       this.ws = null;
+    }
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+  }
+
+  // Планирует повторное подключение при ошибке или закрытии
+  private scheduleReconnect(config: WebSocketConfig): void {
+    if (!this.reconnectTimeout) {
+      this.reconnectTimeout = window.setTimeout(() => {
+        console.log(`Повторное подключение к ${this.exchange}...`);
+        this.connect(config);
+      }, this.reconnectDelay);
     }
   }
 
@@ -59,30 +82,27 @@ export class WebSocketHandler {
     let serverTime: Date | null = null;
 
     if (this.exchange === 'binance' && Array.isArray(data)) {
-      // Парсинг данных Binance
       instruments = data.map((item: any) => ({
         symbol: item.s,
-        lastPrice: parseFloat(item.c),
-        volume: item.v,
-        priceChangePercent: item.P,
-        highPrice: item.h,
-        lowPrice: item.l,
+        lastPrice: parseFloat(item.c || '0'),
+        volume: item.v || '0',
+        priceChangePercent: item.P || '0',
+        highPrice: item.h || '0',
+        lowPrice: item.l || '0',
       }));
       serverTime = data[0]?.E ? new Date(data[0].E) : new Date();
     } else if (this.exchange === 'bybit' && data.topic?.startsWith('tickers')) {
-      // Парсинг данных Bybit
       const item = data.data;
       instruments = [{
         symbol: item.symbol,
-        lastPrice: parseFloat(item.lastPrice),
-        volume: item.volume24h,
+        lastPrice: parseFloat(item.lastPrice || '0'),
+        volume: item.volume24h || '0',
         priceChangePercent: item.price24hPcnt || '0',
-        highPrice: item.highPrice24h,
-        lowPrice: item.lowPrice24h,
+        highPrice: item.highPrice24h || '0',
+        lowPrice: item.lowPrice24h || '0',
       }];
       serverTime = data.ts ? new Date(data.ts) : new Date();
     } else if (this.exchange === 'okx' && data.arg?.channel === 'tickers' && Array.isArray(data.data)) {
-      // Парсинг данных OKX
       instruments = data.data.map((item: any) => {
         const last = parseFloat(item.last || '0');
         const open24h = parseFloat(item.open24h || last);
@@ -101,4 +121,12 @@ export class WebSocketHandler {
 
     return { instruments, serverTime };
   }
+
+  /*
+    refactor: optimize and improve readability across the project
+   * 1. Добавлен механизм повторного подключения (reconnect) при ошибке или закрытии соединения — это улучшает надежность.
+   * 2. Добавлены проверки на null/undefined в parseFloat и значения по умолчанию ('0'), чтобы избежать NaN.
+   * 3. Логирование улучшено для удобства отладки.
+   * 4. Метод parseData можно рефакторить в отдельные парсеры для каждой биржи, если логика станет сложнее.
+   */
 }

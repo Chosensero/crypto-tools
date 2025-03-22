@@ -9,43 +9,48 @@ import { CommonModule } from '@angular/common';
   styles: [],
 })
 export class ExchangeTimeComponent implements OnDestroy {
-  // Запрос обновления времени
-  @Output() updateServerTime = new EventEmitter<void>(); 
-  // Сигнал для серверного времени
-  serverTime = signal<Date | null>(null);       
-  // Сигнал для текущего времени        
-  currentTime = signal<Date>(new Date());               
-  private intervalId: any = null;
+  @Output() updateServerTime = new EventEmitter<void>();
+  serverTime = signal<Date | null>(null);
+  currentTime = signal<Date>(new Date());
+  private intervalId: number | null = null;
 
-  onMouseEnter() {
-    this.updateServerTime.emit(); // Запрашиваем обновление серверного времени
+  onMouseEnter(): void {
+    this.updateServerTime.emit();
 
-    // Останавливаем предыдущий таймер
     this.stopTimer();
 
-    // Запускаем новый таймер для обоих значений
-    this.intervalId = setInterval(() => {
+    this.intervalId = window.setInterval(() => {
       this.currentTime.update((time) => new Date(time.getTime() + 1000));
-      this.serverTime.update((time) => time ? new Date(time.getTime() + 1000) : new Date());
+      this.serverTime.update((time) => (time ? new Date(time.getTime() + 1000) : new Date()));
     }, 1000);
   }
 
-  ngOnDestroy() {
+  onMouseLeave(): void {
     this.stopTimer();
   }
 
-  setServerTime(time: Date | null) {
-    // Метод для обновления serverTime извне
+  ngOnDestroy(): void {
+    this.stopTimer();
+  }
+
+  setServerTime(time: Date | null): void {
     if (time) {
       this.serverTime.set(new Date(time));
-      this.currentTime.set(new Date(time)); // Синхронизируем currentTime
+      this.currentTime.set(new Date(time));
     }
   }
 
-  private stopTimer() {
-    if (this.intervalId) {
+  private stopTimer(): void {
+    if (this.intervalId !== null) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
   }
+
+  /*
+   refactor: optimize and improve readability across the project
+   * 1. Добавлен onMouseLeave для остановки таймера при уходе мыши — это предотвращает ненужные обновления.
+   * 2. Использование Signals упрощает управление состоянием времени.
+   * 3. Тип intervalId изменен на number | null для совместимости с window.setInterval.
+   */
 }
