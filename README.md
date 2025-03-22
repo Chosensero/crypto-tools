@@ -1,27 +1,57 @@
-# CryptoTools
+# Crypto Exchange Dashboard
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.15.
+## Описание
+Приложение для отслеживания данных с криптовалютных бирж в реальном времени. Поддерживает Binance, Bybit и OKX.
 
-## Development server
+## Стек технологий
+- **Angular** (Standalone Components)
+- **PrimeNG** (UI-компоненты)
+- **WebSocket** (получение данных о криптовалютах)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Установка и запуск
 
-## Code scaffolding
+### 1. Клонирование репозитория
+```sh
+git clone <репозиторий>
+cd <папка_проекта>
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### 2. Установка зависимостей
+```sh
+npm install
+```
 
-## Build
+### 3. Запуск приложения
+```sh
+ng serve
+```
+Приложение запустится на `http://localhost:4200/`.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Структура проекта
+```
+src/
+├── app/
+│   ├── components/
+│   │   ├── exchange-selector/       # Выбор биржи
+│   │   ├── exchange-time/           # Время сервера
+│   │   ├── filter-sort/             # Фильтрация и сортировка
+│   │   ├── crypto-table/            # Таблица с крипто-данными
+│   ├── types/
+│   │   ├── crypto-instrument.ts     # Интерфейс крипто-инструмента
+│   │   ├── exchange-option.ts       # Интерфейс биржевых опций
+│   ├── utils/
+│   │   ├── websocket-handler.ts     # Управление WebSocket-соединением
+│   │   ├── exchange-config.ts       # Конфигурация WebSocket для бирж
+│   ├── app.component.ts             # Корневой компонент
+│   ├── app.component.html           # Шаблон корневого компонента
+│   ├── app.component.scss           # Стили корневого компонента
+│   ├── app.config.ts                # Конфиг приложения
+└── ...
+```
 
-## Running unit tests
+## Настройки WebSocket
+Конфигурация соединения с биржами находится в `src/app/utils/exchange-config.ts`.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Лицензия
+MIT
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
